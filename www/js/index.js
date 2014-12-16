@@ -19,15 +19,29 @@
 var app = {
     // Application Constructor
     initialize: function() {
-        this.bindEvents();
+        this.bindDeviceReady();
+		//this.bindEvents();
     },
+	
     // Bind Event Listeners
     //
     // Bind any events that are required on startup. Common events are:
     // 'load', 'deviceready', 'offline', and 'online'.
-    bindEvents: function() {
-        document.addEventListener('deviceready', this.onDeviceReady, false);
+    bindDeviceReady: function() {
+		console.log('bindDeviceReady');
+		if (document.location.protocol == "file:") {
+			// file protocol indicates phonegap
+				document.addEventListener('deviceready', this.onDeviceReady, false);
+			}else {
+			// no phonegap, start initialisation immediately
+			app.initApp();
+			} 
     },
+	initApp: function(){
+		console.log('Geolocation call ...');
+		var watchID = navigator.geolocation.watchPosition(app.onWatchPositionSuccessfunction, app.onWatchPositionError, { enableHighAccuracy:true, timeout: 30000 });
+		console.log("watchId: "+watchID);
+	},
     // deviceready Event Handler
     //
     // The scope of 'this' is the event. In order to call the 'receivedEvent'
@@ -35,10 +49,8 @@ var app = {
     onDeviceReady: function() {
         app.receivedEvent('deviceready');
         // Options: throw an error if no update is received every 30 seconds.
-//
-		console.log('Geolocation call ...');
-		var watchID = navigator.geolocation.watchPosition(app.onWatchPositionSuccessfunction, app.onWatchPositionError, { timeout: 30000 });
-		alert("watchId: "+watchID);
+		debugger;
+		app.initApp();
     },
     // Update DOM on a Received Event
     receivedEvent: function(id) {
@@ -57,17 +69,24 @@ var app = {
 	//   the current GPS coordinates
 	//
 	onWatchPositionSuccessfunction: function (position) {
+		
 		var element = document.getElementById('geolocation');
 		element.innerHTML = 'Latitude: '  + position.coords.latitude      + '<br />' +
-							'Longitude: ' + position.coords.longitude     + '<br />' +
-							'<hr />'      + element.innerHTML;
+							'Longitude: ' + position.coords.longitude     + '<br />';
+	    console.log('Latitude: '  + position.coords.latitude      +'Longitude: ' + position.coords.longitude );
+		app.showMap(position.coords.latitude,position.coords.longitude);
 	},
 
 	// onError Callback receives a PositionError object
 	onWatchPositionError: function(error) {
 		alert('code: '    + error.code    + '\n' +
 			  'message: ' + error.message + '\n');
+	},
+	
+	showMap: function(latitude, longitude){		
+		var googleUrl = 'http://maps.google.com/maps?q=loc:'+latitude+','+longitude; 
+		console.log('GoogleUrl: '+googleUrl);
+		var mapPanelElement = document.getElementById('mappanel');
+		mapPanelElement.innerHTML= '<iframe   style="height: 100%; width: 100%;" width="100%" src="'+googleUrl+'"></iframe>'
 	}
-
-
 };
