@@ -34,6 +34,9 @@ var app = {
     // function, we must explicitly call 'app.receivedEvent(...);'
     onDeviceReady: function() {
         app.receivedEvent('deviceready');
+        // Options: throw an error if no update is received every 30 seconds.
+//
+		var watchID = navigator.geolocation.watchPosition(app.onWatchPositionSuccessfunction, app.onWatchPositionError, { timeout: 30000 });
     },
     // Update DOM on a Received Event
     receivedEvent: function(id) {
@@ -45,5 +48,24 @@ var app = {
         receivedElement.setAttribute('style', 'display:block;');
 
         console.log('Received Event: ' + id);
-    }
+    },
+    
+	// onSuccess Callback
+	//   This method accepts a `Position` object, which contains
+	//   the current GPS coordinates
+	//
+	onWatchPositionSuccessfunction: function (position) {
+		var element = document.getElementById('geolocation');
+		element.innerHTML = 'Latitude: '  + position.coords.latitude      + '<br />' +
+							'Longitude: ' + position.coords.longitude     + '<br />' +
+							'<hr />'      + element.innerHTML;
+	},
+
+	// onError Callback receives a PositionError object
+	onWatchPositionError: function(error) {
+		alert('code: '    + error.code    + '\n' +
+			  'message: ' + error.message + '\n');
+	}
+
+
 };
