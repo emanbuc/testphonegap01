@@ -36,7 +36,9 @@ var app = {
         app.receivedEvent('deviceready');
         // Options: throw an error if no update is received every 30 seconds.
 //
+		console.log('Geolocation call ...');
 		var watchID = navigator.geolocation.watchPosition(app.onWatchPositionSuccessfunction, app.onWatchPositionError, { timeout: 30000 });
+		alert("watchId: "+watchID);
     },
     // Update DOM on a Received Event
     receivedEvent: function(id) {
